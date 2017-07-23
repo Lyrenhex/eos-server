@@ -23,10 +23,10 @@ server.on('connect', function(sock) {
       case 'id':
         if(USERS[data.uid] !== undefined){
           USERS[data.uid] = {socket: sock, pair: null}
-          if(WAITS.length === 0)
+          if(WAITS.length === 0){
             WAITS.push(data.uid);
             console.log('user now waiting: ', data.uid);
-          else {
+          } else {
             var newLen = PAIRS.push([WAITS[0], data.uid]);
             USERS[data.uid].pair = newLen - 1;
             var removed = WAITS.splice(0, 1);
