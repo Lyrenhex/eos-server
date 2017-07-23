@@ -22,7 +22,7 @@ server.on('connect', function(sock) {
     switch (data.type){
       case 'id':
         console.log(USERS[data.uid]);
-        if(USERS[data.uid] !== undefined){
+        if(USERS[data.uid] === undefined){
           USERS[data.uid] = {socket: sock, pair: null}
           if(WAITS.length === 0){
             WAITS.push(data.uid);
