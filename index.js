@@ -8,7 +8,9 @@ const SSL = {
   cert: fs.readFileSync('certificate.crt')
 }
 
-var USERS = { }
+var USERS = {};
+var PAIRS = [];
+var WAITS = [];
 
 // set up SSL websocket
 var server = ws.createServer(SSL);
@@ -19,7 +21,20 @@ server.on('connect', function(sock) {
     var data = JSON.parse(json);
     switch (data.type){
       case 'id':
-        USERS[data.uid] = sock;
+        if(USERS[data.uid] !== undefined){
+          USERS[data.uid] = {socket: sock, pair: null}
+          if(WAITS.length === 0)
+            WAITS.push(data.uid);
+            console.log('user now waiting: ', data.uid);
+          else {
+            var newLen = PAIRS.push([WAITS[0], data.uid]);
+            USERS[data.uid].pair = newLen - 1;
+            var removed = WAITS.splice(0, 1);
+            console.log('paired waiting user: ', removed);
+          }
+        }else{
+          // TODO: handle multiple instances of same account somehow
+        }
         break;
     }
   });
