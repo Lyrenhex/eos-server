@@ -8,8 +8,19 @@ const SSL = {
   cert: fs.readFileSync('certificate.crt')
 }
 
+var USERS = { }
+
 // set up SSL websocket
 var server = ws.createServer(SSL);
 server.on('connect', function(sock) {
-  console.log('connection: ', sock);
+  console.log('new connection');
+  sock.on('message', function(json) {
+    console.log(json);
+    let data = JSON.parse(json);
+    switch (data.type){
+      case 'id':
+        USERS[data.uid] = sock;
+        break;
+    }
+  });
 }).listen(443);
