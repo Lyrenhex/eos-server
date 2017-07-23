@@ -16,7 +16,7 @@ server.on('connect', function(sock) {
   console.log('new connection');
   sock.on('message', function(json) {
     console.log(json);
-    let data = JSON.parse(json);
+    var data = JSON.parse(json);
     switch (data.type){
       case 'id':
         USERS[data.uid] = sock;
