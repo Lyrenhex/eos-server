@@ -17,10 +17,11 @@ var server = ws.createServer(SSL);
 server.on('connect', function(sock) {
   console.log('new connection');
   sock.on('message', function(json) {
-    console.log(json);
     var data = JSON.parse(json);
+    console.log(data);
     switch (data.type){
       case 'id':
+        console.log(USERS[data.uid]);
         if(USERS[data.uid] !== undefined){
           USERS[data.uid] = {socket: sock, pair: null}
           if(WAITS.length === 0){
