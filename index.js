@@ -49,6 +49,22 @@ function init() {
   server.on('connect', function(sock) {
     var DATA;
     console.log('new connection');
+    sock.on('close', function(){
+      console.log(`user ${DATA.uid} closed connection`);
+      if(USERS[DATA.uid].pair !== null){ // they were paired with someone
+        var pair = PAIRS[USERS[DATA.uid].pair];
+        pair.forEach(function(uid){
+          if(uid !== DATA.uid){
+            // it's the other party
+            USERS[uid].pair = null;
+            USERS[uid].socket.close(); // close the connection to the other party
+          }
+        });
+      }else if(WAITS.includes(DATA.uid)){
+        WAITS.splice(WAITS.indexOf(DATA.uid), 1);
+      }
+      USERS[DATA.uid] = undefined; // kill user's data.
+    });
     sock.on('message', function(json) {
       var data = JSON.parse(json);
       console.log(data);
@@ -132,20 +148,6 @@ function init() {
           }
           break;
       }
-    });
-    sock.on('close', function(){
-      console.log(`user ${DATA.uid} closed connection`);
-      if(USERS[DATA.uid].pair !== null){ // they were paired with someone
-        var pair = PAIRS[USERS[DATA.uid].pair];
-        pair.forEach(function(uid){
-          if(uid !== DATA.uid){
-            // it's the other party
-            USERS[uid].pair = null;
-            USERS[uid].socket.close(); // close the connection to the other party
-          }
-        });
-      }
-      USERS[DATA.uid] = undefined; // kill user's data.
     });
   }).listen(9874);
 }
