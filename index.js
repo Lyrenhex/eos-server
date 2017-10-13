@@ -55,9 +55,13 @@ function init() {
         var pair = PAIRS[USERS[DATA.uid].pair];
         pair.forEach(function(uid){
           if(uid !== DATA.uid){
-            // it's the other party
-            USERS[uid].pair = null;
-            USERS[uid].socket.close(); // close the connection to the other party
+            try {
+              // it's the other party
+              USERS[uid].pair = null;
+              USERS[uid].socket.close(); // close the connection to the other party
+            } catch (TypeError) {
+              // the other party's already dead -- ahh, how I hate browsers.
+            }
           }
         });
       }else if(WAITS.indexOf(DATA.uid) >= 0){
