@@ -6,8 +6,8 @@ const request = require('request');
 const firebase = require('firebase');
 
 const SSL = {
-  key: fs.readFileSync('private.key'),
-  cert: fs.readFileSync('certificate.crt')
+  key: fs.readFileSync('/etc/letsencrypt/live/staging.chat.eos.dheaton.uk/privkey.pem'),
+  cert: fs.readFileSync('/etc/letsencrypt/live/staging.chat.eos.dheaton.uk/fullchain.pem')
 }
 
 const HEADERS = {
@@ -87,11 +87,11 @@ function init() {
                 var menace = body.attributeScores.ATTACK_ON_COMMENTER.summaryScore.value;
                 if(menace >= CONFIG["menace threshold"]){
                   var newLen = USERS[DATA.uid].holds.push(data.text);
-                  sock.send(JSON.stringify({type:'hold', cause:'menace', id:newLen - 1}));
+                  sock.send(JSON.stringify({type:'hold', cause:'menace', id:newLen - 1, text:data.text}));
                   console.log('message held: menace', menace);
                 } else if(toxicity > CONFIG["toxicity threshold"]){
                   var newLen = USERS[DATA.uid].holds.push(data.text);
-                  sock.send(JSON.stringify({type:'hold', cause:'toxicity', id:newLen - 1}));
+                  sock.send(JSON.stringify({type:'hold', cause:'toxicity', id:newLen - 1, text:data.text}));
                   console.log('message held: toxicity', toxicity);
                 } else {
                   var pair = PAIRS[USERS[DATA.uid].pair];
