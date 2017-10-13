@@ -1,13 +1,15 @@
 // Node.JS Websocket Eos Chat Server
 
+const branch = "staging"
+
 const ws = require('websockets');
 const fs = require('fs');
 const request = require('request');
 const firebase = require('firebase');
 
 const SSL = {
-  key: fs.readFileSync('/etc/letsencrypt/live/staging.chat.eos.dheaton.uk/privkey.pem'),
-  cert: fs.readFileSync('/etc/letsencrypt/live/staging.chat.eos.dheaton.uk/fullchain.pem')
+  key: fs.readFileSync('/etc/letsencrypt/live/prod.chat.eos.dheaton.uk/privkey.pem'),
+  cert: fs.readFileSync('/etc/letsencrypt/live/prod.chat.eos.dheaton.uk/fullchain.pem')
 }
 
 const HEADERS = {
@@ -29,7 +31,7 @@ var config = {
   messagingSenderId: "930975983513"
 };
 firebase.initializeApp(config);
-var confRef = firebase.database().ref('/config');
+var confRef = firebase.database().ref(`/config/${branch}`);
 confRef.on('value', function(snapshot){
   CONFIG = snapshot.val();
   try {
@@ -143,5 +145,5 @@ function init() {
       }
       USERS[DATA.uid] = undefined; // kill user's data.
     });
-  }).listen(443);
+  }).listen(9874);
 }
