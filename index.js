@@ -61,7 +61,7 @@ function init() {
             WAITS.push(data.uid);
             console.log('user now waiting: ', data.uid);
           } else {
-            WAITS.forEach(function(waiter, index){
+            WAITS.some(function(waiter, index){
               if (waiter !== data.uid) {
                 var newLen = PAIRS.push([WAITS[index], data.uid]);
                 USERS[data.uid].pair = newLen - 1;
@@ -70,7 +70,7 @@ function init() {
                 USERS[removed].pair = newLen - 1;
                 sock.send(JSON.stringify({type:'init'}));
                 USERS[removed].socket.send(JSON.stringify({type:'init'}));
-                break;
+                return true;
               }
             })
           }
