@@ -51,21 +51,21 @@ function init() {
     console.log('new connection');
     sock.on('close', function(){
       console.log(`user ${DATA.uid} closed connection`);
-      if(USERS[DATA.uid].pair !== null && USERS[DATA.uid].pair !== undefined){ // they were paired with someone
-        var pair = PAIRS[USERS[DATA.uid].pair];
-        pair.forEach(function(uid){
-          if(uid !== DATA.uid){
-            try {
+      try {
+        if(USERS[DATA.uid].pair !== null && USERS[DATA.uid].pair !== undefined){ // they were paired with someone
+          var pair = PAIRS[USERS[DATA.uid].pair];
+          pair.forEach(function(uid){
+            if(uid !== DATA.uid){
               // it's the other party
               USERS[uid].pair = null;
               USERS[uid].socket.close(); // close the connection to the other party
-            } catch (TypeError) {
-              // the other party's already dead -- ahh, how I hate browsers.
             }
-          }
-        });
-      }else if(WAITS.indexOf(DATA.uid) >= 0){
-        WAITS.splice(WAITS.indexOf(DATA.uid), 1);
+          });
+        }else if(WAITS.indexOf(DATA.uid) >= 0){
+          WAITS.splice(WAITS.indexOf(DATA.uid), 1);
+        }
+      } catch (TypeError) {
+        // fucking hell, websockets in browsers are a royal pain in the ass
       }
       USERS[DATA.uid] = undefined; // kill user's data.
     });
