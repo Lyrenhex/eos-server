@@ -60,7 +60,7 @@ function init() {
             USERS[uid].socket.close(); // close the connection to the other party
           }
         });
-      }else if(WAITS.includes(DATA.uid)){
+      }else if(WAITS.indexOf(DATA.uid) >= 0){
         WAITS.splice(WAITS.indexOf(DATA.uid), 1);
       }
       USERS[DATA.uid] = undefined; // kill user's data.
