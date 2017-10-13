@@ -56,6 +56,7 @@ function init() {
         case 'id':
           DATA = data;
           USERS[data.uid] = {socket: sock, pair: null, holds: []}
+          console.log(WAITS);
           if(WAITS.length === 0){
             WAITS.push(data.uid);
             console.log('user now waiting: ', data.uid);
