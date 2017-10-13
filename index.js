@@ -1,15 +1,15 @@
 // Node.JS Websocket Eos Chat Server
 
-const branch = "staging"
-
 const ws = require('websockets');
 const fs = require('fs');
 const request = require('request');
 const firebase = require('firebase');
 
+const branch = (fs.existsSync('../prod') ? "prod" : "staging");
+
 const SSL = {
-  key: fs.readFileSync('/etc/letsencrypt/live/prod.chat.eos.dheaton.uk/privkey.pem'),
-  cert: fs.readFileSync('/etc/letsencrypt/live/prod.chat.eos.dheaton.uk/fullchain.pem')
+  key: fs.readFileSync(`/etc/letsencrypt/live/${branch}.chat.eos.dheaton.uk/privkey.pem`),
+  cert: fs.readFileSync(`/etc/letsencrypt/live/${branch}.chat.eos.dheaton.uk/fullchain.pem`)
 }
 
 const HEADERS = {
