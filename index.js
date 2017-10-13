@@ -70,6 +70,7 @@ function init() {
                 USERS[removed].pair = newLen - 1;
                 sock.send(JSON.stringify({type:'init'}));
                 USERS[removed].socket.send(JSON.stringify({type:'init'}));
+                break;
               }
             })
           }
