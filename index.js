@@ -51,7 +51,7 @@ function init() {
     console.log('new connection');
     sock.on('close', function(){
       console.log(`user ${DATA.uid} closed connection`);
-      if(USERS[DATA.uid].pair !== null){ // they were paired with someone
+      if(USERS[DATA.uid].pair !== null && USERS[DATA.uid].pair !== undefined){ // they were paired with someone
         var pair = PAIRS[USERS[DATA.uid].pair];
         pair.forEach(function(uid){
           if(uid !== DATA.uid){
