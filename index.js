@@ -96,8 +96,18 @@ function init() {
           }
           break;
         case 'msg':
+          /* message packets should be structured as:
+            type: 'msg',
+            text: user's message,
+            uid: sender's user id
+          */
           if(USERS[DATA.uid].pair !== null){
-            var dataString = `{comment: {text: "${data.text}"}, languages: ["en"], requestedAttributes: {TOXICITY:{},ATTACK_ON_COMMENTER:{}}}, doNotStore: true`;
+            var dataString = `{
+              comment: {text: "${data.text}"},
+              languages: ["en"],
+              requestedAttributes: {ATTACK_ON_COMMENTER:{}},
+              doNotStore: true
+            }`;
             var options = {
               url: 'https://commentanalyzer.googleapis.com/v1alpha1/comments:analyze?key=AIzaSyDmEXbxhOpLzX8wONwTbcJF9AAHh7C69GY',
               method: 'POST',
@@ -107,16 +117,11 @@ function init() {
             function response(err, resp, body){
               if(!err && resp.statusCode === 200){
                 body = JSON.parse(body);
-                var toxicity = body.attributeScores.TOXICITY.summaryScore.value;
                 var menace = body.attributeScores.ATTACK_ON_COMMENTER.summaryScore.value;
                 if(menace >= CONFIG["menace threshold"]){
                   var newLen = USERS[DATA.uid].holds.push(data.text);
                   sock.send(JSON.stringify({type:'hold', cause:'menace', id:newLen - 1, text:data.text}));
                   console.log('message held: menace', menace);
-                } else if(toxicity > CONFIG["toxicity threshold"]){
-                  var newLen = USERS[DATA.uid].holds.push(data.text);
-                  sock.send(JSON.stringify({type:'hold', cause:'toxicity', id:newLen - 1, text:data.text}));
-                  console.log('message held: toxicity', toxicity);
                 } else {
                   var pair = PAIRS[USERS[DATA.uid].pair];
                   pair.forEach(function(uid){
@@ -126,7 +131,7 @@ function init() {
                   });
                 }
               }else{
-                console.log('perspective api', resp.statusCode, 'message filter passthrough');
+                console.log('perspective api', resp.statusCode, 'message filter passthrough; ', err);
                 var pair = PAIRS[USERS[DATA.uid].pair];
                 pair.forEach(function(uid){
                   if(uid !== DATA.uid){
