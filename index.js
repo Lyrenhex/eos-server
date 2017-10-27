@@ -18,6 +18,7 @@ const HEADERS = {
 
 var USERS = {};
 var PAIRS = [];
+var PAIRS_HISTORY = {};
 var WAITS = [];
 var CONFIG;
 var server;
@@ -85,6 +86,7 @@ function init() {
               if (waiter !== data.uid) {
                 var newLen = PAIRS.push([WAITS[index], data.uid]);
                 USERS[data.uid].pair = newLen - 1;
+                PAIRS_HISTORY[newLen - 1] = [];
                 var removed = WAITS.splice(index, 1);
                 console.log(`paired waiting user ${removed} with ${data.uid}`);
                 USERS[removed].pair = newLen - 1;
@@ -102,6 +104,9 @@ function init() {
             uid: sender's user id
           */
           if(USERS[DATA.uid].pair !== null){
+            // add message object to log
+            PAIRS_HISTORY[USERS[DATA.uid].pair].push(data);
+
             var dataString = `{
               comment: {text: "${data.text}"},
               languages: ["en"],
@@ -155,6 +160,11 @@ function init() {
           } catch(e) {
             // for some reason, we coudln't approve the message?
           }
+          break;
+        case 'report':
+          let reportRef = firebase.database().ref(`/reports/`);
+          let newReportRef = reportRef.push();
+          newReportRef.set(PAIRS_HISTORY[USERS[DATA.uid].pair]);
           break;
       }
     });
