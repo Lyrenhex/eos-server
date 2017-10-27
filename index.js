@@ -162,8 +162,8 @@ function init() {
           }
           break;
         case 'report':
-          let reportRef = firebase.database().ref(`/reports/`);
-          let newReportRef = reportRef.push();
+          var reportRef = firebase.database().ref(`/reports/`);
+          var newReportRef = reportRef.push();
           newReportRef.set(PAIRS_HISTORY[USERS[DATA.uid].pair]);
           break;
       }
