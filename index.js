@@ -1,12 +1,31 @@
-// Node.JS Websocket Eos Chat Server
+/*
+ * Eos Backend Chat Server
+ * 
+ * Copyright (c) Damian Heaton 2017 All rights reserved.
+ * 
+ * This software is designed to operate on a UBUNTU 17.04 machine running NODEJS
+ * and NPM.
+ * 
+ * A TLS key MUST be provided in /etc/letsencrypt/live/prod.chat.eos.dheaton.uk, or 
+ * /etc/letsencrypt/live/staging.chat.eos.dheaton.uk - whichever is appropriate for the
+ * branch that the server is operating on.
+ * 
+ * Production servers MUST contain a file named 'prod' (WITHOUT file extension) in the
+ * directory above this one.
+ * 
+ * Server operates on port 9874
+ */
 
 const ws = require('websockets');
 const fs = require('fs');
 const request = require('request');
 const firebase = require('firebase');
 
+// if we have a 'prod' file, then the server is production grade
 const branch = (fs.existsSync('../prod') ? "prod" : "staging");
 
+// load the SSL certificate and private key into memory
+// SSL is required for any websocket connections originating from HTTPS
 const SSL = {
   key: fs.readFileSync(`/etc/letsencrypt/live/${branch}.chat.eos.dheaton.uk/privkey.pem`),
   cert: fs.readFileSync(`/etc/letsencrypt/live/${branch}.chat.eos.dheaton.uk/fullchain.pem`)
@@ -32,6 +51,8 @@ var config = {
   messagingSenderId: "930975983513"
 };
 firebase.initializeApp(config);
+
+// get config settings, and initialize the server
 var confRef = firebase.database().ref(`/config/${branch}`);
 confRef.on('value', function(snapshot){
   CONFIG = snapshot.val();
